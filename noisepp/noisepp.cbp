@@ -16,6 +16,7 @@
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />
+					<Add option="-Og" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -26,9 +27,10 @@
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
-					<Add option="-O3" />
 					<Add option="-Wall" />
-					<Add option="-funroll-loops -ffast-math" />
+					<Add option="-funroll-loops" />
+					<Add option="-ffast-math" />
+					<Add option="-Ofast" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -36,6 +38,7 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=gnu++1y" />
 			<Add directory="core" />
 			<Add directory="utils" />
 			<Add directory="threadpp" />
