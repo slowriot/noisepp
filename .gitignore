@@ -1,0 +1,6 @@
+*/obj
+lib/
+*.depend
+*.layout
+Thumbs.db
+.DS_Store
