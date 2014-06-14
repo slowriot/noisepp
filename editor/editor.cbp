@@ -41,6 +41,9 @@
 				</Linker>
 			</Target>
 		</Build>
+		<VirtualTargets>
+			<Add alias="all" targets="Debug;Release;" />
+		</VirtualTargets>
 		<Compiler>
 			<Add option="`wx-config --cflags`" />
 			<Add directory="./" />
