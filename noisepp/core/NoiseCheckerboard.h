@@ -23,6 +23,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+
 #ifndef NOISEPP_CHECKERBOARD_H
 #define NOISEPP_CHECKERBOARD_H
 
@@ -48,7 +49,7 @@ namespace noisepp
 			{
 				const int ix = (int)(floor (Math::MakeInt32Range (x)));
 				const int iy = (int)(floor (Math::MakeInt32Range (y)));
-				return (ix & 1 ^ iy & 1)? Real(-1.0) : Real(1.0);
+				return ((ix & 1) ^ (iy & 1))? Real(-1.0) : Real(1.0);
 			}
 	};
 
@@ -60,7 +61,7 @@ namespace noisepp
 				const int ix = (int)(floor (Math::MakeInt32Range (x)));
 				const int iy = (int)(floor (Math::MakeInt32Range (y)));
 				const int iz = (int)(floor (Math::MakeInt32Range (z)));
-				return (ix & 1 ^ iy & 1 ^ iz & 1)? Real(-1.0) : Real(1.0);
+				return ((ix & 1) ^ (iy & 1) ^ (iz & 1))? Real(-1.0) : Real(1.0);
 			}
 	};
 

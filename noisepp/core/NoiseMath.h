@@ -64,11 +64,13 @@ namespace noisepp
 			{
 				if (n >= Real(1073741824.0))
 				{
-					return (Real(2.0) * fmod (n, Real(1073741824.0))) - Real(1073741824.0);
+					Real temp(1073741824.0);
+					return (Real(2.0) * std::modf (n, &temp)) - Real(1073741824.0);
 				}
 				else if (n <= Real(-1073741824.0))
 				{
-					return (Real(2.0) * fmod (n, Real(1073741824.0))) + Real(1073741824.0);
+					Real temp(1073741824.0);
+					return (Real(2.0) * std::modf (n, &temp)) + Real(1073741824.0);
 				}
 				else
 					return n;
