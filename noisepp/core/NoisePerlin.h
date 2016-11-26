@@ -330,7 +330,7 @@ namespace noisepp
 			}
 			virtual ~PerlinElement3D ()
 			{
-				delete mOctaves;
+				delete[] mOctaves;
 				mOctaves = NULL;
 			}
 			virtual Real getValue (Real x, Real y, Real z, Cache *cache) const
