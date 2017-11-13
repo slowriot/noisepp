@@ -1,7 +1,9 @@
 */obj
+obj
 lib/
 examples/bin
 examples/*/obj
+build/bin
 *.depend
 *.layout
 Thumbs.db
