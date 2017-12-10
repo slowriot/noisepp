@@ -86,7 +86,7 @@ namespace noisepp
 			}
 			virtual ~RidgedMultiElement1D ()
 			{
-				delete mOctaves;
+				delete[] mOctaves;
 				mOctaves = NULL;
 			}
 			virtual Real getValue (Real x, Cache *cache) const
@@ -168,7 +168,7 @@ namespace noisepp
 			}
 			virtual ~RidgedMultiElement2D ()
 			{
-				delete mOctaves;
+				delete[] mOctaves;
 				mOctaves = NULL;
 			}
 			virtual Real getValue (Real x, Real y, Cache *cache) const
@@ -251,7 +251,7 @@ namespace noisepp
 			}
 			virtual ~RidgedMultiElement3D ()
 			{
-				delete mOctaves;
+				delete[] mOctaves;
 				mOctaves = NULL;
 			}
 			virtual Real getValue (Real x, Real y, Real z, Cache *cache) const

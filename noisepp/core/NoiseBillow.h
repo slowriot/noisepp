@@ -83,7 +83,7 @@ namespace noisepp
 			}
 			virtual ~BillowElement1D ()
 			{
-				delete mOctaves;
+				delete[] mOctaves;
 				mOctaves = NULL;
 			}
 			virtual Real getValue (Real x, Cache *cache) const
@@ -155,7 +155,7 @@ namespace noisepp
 			}
 			virtual ~BillowElement2D ()
 			{
-				delete mOctaves;
+				delete[] mOctaves;
 				mOctaves = NULL;
 			}
 			virtual Real getValue (Real x, Real y, Cache *cache) const
