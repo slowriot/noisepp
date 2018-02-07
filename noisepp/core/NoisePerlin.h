@@ -187,7 +187,7 @@ namespace noisepp
 			}
 			virtual ~PerlinElement1D ()
 			{
-				delete mOctaves;
+				delete[] mOctaves;
 				mOctaves = NULL;
 			}
 			virtual Real getValue (Real x, Cache *cache) const
@@ -258,7 +258,7 @@ namespace noisepp
 			}
 			virtual ~PerlinElement2D ()
 			{
-				delete mOctaves;
+				delete[] mOctaves;
 				mOctaves = NULL;
 			}
 			virtual Real getValue (Real x, Real y, Cache *cache) const
