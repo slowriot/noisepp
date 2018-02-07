@@ -30,17 +30,23 @@
 #include "NoiseVectorTable.h"
 #include "NoisePlatform.h"
 
+#ifdef NOISEPP_ENABLE_64BIT_INT
+  #define INT_TYPE int
+#else
+  #define INT_TYPE INT_TYPE
+#endif // NOISEPP_ENABLE_64BIT_INT
+
 namespace noisepp
 {
 	#define NOISE_GENERATOR_INTEGER_CLAMP_X \
-		const int x0 = (x > Real(0.0) ? (int)x : (int)x - 1); \
-		const int x1 = x0 + 1;
+		const INT_TYPE x0 = (x > Real(0.0) ? static_cast<INT_TYPE>(x) : static_cast<INT_TYPE>(x) - 1); \
+		const INT_TYPE x1 = x0 + 1;
 	#define NOISE_GENERATOR_INTEGER_CLAMP_Y \
-		const int y0 = (y > Real(0.0) ? (int)y : (int)y - 1); \
-		const int y1 = y0 + 1;
+		const INT_TYPE y0 = (y > Real(0.0) ? static_cast<INT_TYPE>(y) : static_cast<INT_TYPE>(y) - 1); \
+		const INT_TYPE y1 = y0 + 1;
 	#define NOISE_GENERATOR_INTEGER_CLAMP_Z \
-		const int z0 = (z > Real(0.0) ? (int)z : (int)z - 1); \
-		const int z1 = z0 + 1;
+		const INT_TYPE z0 = (z > Real(0.0) ? static_cast<INT_TYPE>(z) : static_cast<INT_TYPE>(z) - 1); \
+		const INT_TYPE z1 = z0 + 1;
 
 	#define NOISE_GENERATOR_INTEGER_CLAMP_1D \
 		NOISE_GENERATOR_INTEGER_CLAMP_X
@@ -56,20 +62,20 @@ namespace noisepp
 
 	enum { NOISE_QUALITY_LOW=0, NOISE_QUALITY_STD=1, NOISE_QUALITY_HIGH=2, NOISE_QUALITY_FAST_LOW=3, NOISE_QUALITY_FAST_STD=4, NOISE_QUALITY_FAST_HIGH=5 };
 
-	const int NOISE_X_FACTOR = 1619;
-	const int NOISE_Y_FACTOR = 31337;
-	const int NOISE_Z_FACTOR = 6971;
-	const int NOISE_SEED_FACTOR = 1013;
-	const int NOISE_SHIFT = 8;
+	const INT_TYPE NOISE_X_FACTOR = 1619;
+	const INT_TYPE NOISE_Y_FACTOR = 31337;
+	const INT_TYPE NOISE_Z_FACTOR = 6971;
+	const INT_TYPE NOISE_SEED_FACTOR = 1013;
+	const INT_TYPE NOISE_SHIFT = 8;
 
 	const Real FAST_NOISE_SCALE_FACTOR = 0.5;
 
 	class Generator1D
 	{
 		private:
-			static NOISEPP_INLINE Real calcGradientNoise (Real fx, int ix, int seed)
+			static NOISEPP_INLINE Real calcGradientNoise (Real fx, INT_TYPE ix, int seed)
 			{
-				int vIndex = (NOISE_X_FACTOR * ix + NOISE_SEED_FACTOR * seed) & 0xffffffff;
+				INT_TYPE vIndex = (NOISE_X_FACTOR * ix + NOISE_SEED_FACTOR * seed) & 0xffffffff;
 				vIndex ^= (vIndex >> NOISE_SHIFT);
 				vIndex &= 0xff;
 
@@ -79,7 +85,7 @@ namespace noisepp
 				return xDelta * xGradient;
 			}
 
-			static NOISEPP_INLINE Real interpGradientCoherentNoise (Real x, int x0, int x1, Real xs, int seed, Real scale)
+			static NOISEPP_INLINE Real interpGradientCoherentNoise (Real x, INT_TYPE x0, INT_TYPE x1, Real xs, int seed, Real scale)
 			{
 				Real n0, n1;
 				n0 = calcGradientNoise(x, x0, seed);
@@ -87,15 +93,15 @@ namespace noisepp
 				return Math::InterpLinear (n0, n1, xs) * scale;
 			}
 
-			static NOISEPP_INLINE Real calcGradientFastNoise (Real fx, int ix, int seed)
+			static NOISEPP_INLINE Real calcGradientFastNoise (Real fx, INT_TYPE ix, int seed)
 			{
-				int vIndex = (NOISE_X_FACTOR * ix + NOISE_SEED_FACTOR * seed) & 0xffffffff;
+				INT_TYPE vIndex = (NOISE_X_FACTOR * ix + NOISE_SEED_FACTOR * seed) & 0xffffffff;
 				vIndex ^= (vIndex >> NOISE_SHIFT);
 				vIndex &= 0xff;
 				return gradientVector[vIndex];
 			}
 
-			static NOISEPP_INLINE Real interpGradientCoherentFastNoise (Real x, int x0, int x1, Real xs, int seed, Real scale)
+			static NOISEPP_INLINE Real interpGradientCoherentFastNoise (Real x, INT_TYPE x0, INT_TYPE x1, Real xs, int seed, Real scale)
 			{
 				Real n0, n1;
 				n0 = calcGradientFastNoise(x, x0, seed);
@@ -103,9 +109,9 @@ namespace noisepp
 				return Math::InterpLinear (n0, n1, xs) * scale;
 			}
 
-			static NOISEPP_INLINE int intNoise (int x, int seed)
+			static NOISEPP_INLINE INT_TYPE intNoise (INT_TYPE x, int seed)
 			{
-				int n = (NOISE_X_FACTOR * x + NOISE_SEED_FACTOR * seed) & 0x7fffffff;
+				INT_TYPE n = (NOISE_X_FACTOR * x + NOISE_SEED_FACTOR * seed) & 0x7fffffff;
 				n = (n >> 13) ^ n;
 				return (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
 			}
@@ -164,7 +170,7 @@ namespace noisepp
 				return interpGradientCoherentFastNoise (x, x0, x1, xs, seed, scale);
 			}
 
-			static NOISEPP_INLINE Real calcNoise (int x, int seed)
+			static NOISEPP_INLINE Real calcNoise (INT_TYPE x, int seed)
 			{
 				return Real(1.0) - ((Real)intNoise(x, seed) / Real(1073741824.0));
 			}
@@ -172,9 +178,9 @@ namespace noisepp
 	class Generator2D
 	{
 		private:
-			static NOISEPP_INLINE Real calcGradientNoise (Real fx, Real fy, int ix, int iy, int seed)
+			static NOISEPP_INLINE Real calcGradientNoise (Real fx, Real fy, INT_TYPE ix, INT_TYPE iy, int seed)
 			{
-				int vIndex = (NOISE_X_FACTOR * ix + NOISE_Y_FACTOR * iy + NOISE_SEED_FACTOR * seed) & 0xffffffff;
+				INT_TYPE vIndex = (NOISE_X_FACTOR * ix + NOISE_Y_FACTOR * iy + NOISE_SEED_FACTOR * seed) & 0xffffffff;
 				vIndex ^= (vIndex >> NOISE_SHIFT);
 				vIndex &= 0xff;
 
@@ -186,7 +192,7 @@ namespace noisepp
 				return (xGradient * xDelta + yGradient * yDelta);
 			}
 
-			static NOISEPP_INLINE Real interpGradientCoherentNoise (Real x, Real y, int x0, int x1, int y0, int y1, Real xs, Real ys, int seed, Real scale)
+			static NOISEPP_INLINE Real interpGradientCoherentNoise (Real x, Real y, INT_TYPE x0, INT_TYPE x1, INT_TYPE y0, INT_TYPE y1, Real xs, Real ys, int seed, Real scale)
 			{
 				Real n0, n1, ix0, ix1;
 				n0 = calcGradientNoise(x, y, x0, y0, seed);
@@ -198,15 +204,15 @@ namespace noisepp
 				return Math::InterpLinear (ix0, ix1, ys) * scale;
 			}
 
-			static NOISEPP_INLINE Real calcGradientFastNoise (Real fx, Real fy, int ix, int iy, int seed)
+			static NOISEPP_INLINE Real calcGradientFastNoise (Real fx, Real fy, INT_TYPE ix, INT_TYPE iy, int seed)
 			{
-				int vIndex = (NOISE_X_FACTOR * ix + NOISE_Y_FACTOR * iy + NOISE_SEED_FACTOR * seed) & 0xffffffff;
+				INT_TYPE vIndex = (NOISE_X_FACTOR * ix + NOISE_Y_FACTOR * iy + NOISE_SEED_FACTOR * seed) & 0xffffffff;
 				vIndex ^= (vIndex >> NOISE_SHIFT);
 				vIndex &= 0xff;
 				return gradientVector[vIndex];
 			}
 
-			static NOISEPP_INLINE Real interpGradientCoherentFastNoise (Real x, Real y, int x0, int x1, int y0, int y1, Real xs, Real ys, int seed, Real scale)
+			static NOISEPP_INLINE Real interpGradientCoherentFastNoise (Real x, Real y, INT_TYPE x0, INT_TYPE x1, INT_TYPE y0, INT_TYPE y1, Real xs, Real ys, int seed, Real scale)
 			{
 				Real n0, n1, ix0, ix1;
 				n0 = calcGradientFastNoise(x, y, x0, y0, seed);
@@ -218,9 +224,9 @@ namespace noisepp
 				return Math::InterpLinear (ix0, ix1, ys) * scale;
 			}
 
-			static NOISEPP_INLINE int intNoise (int x, int y, int seed)
+			static NOISEPP_INLINE INT_TYPE intNoise (INT_TYPE x, INT_TYPE y, int seed)
 			{
-				int n = (NOISE_X_FACTOR * x + NOISE_Y_FACTOR * y + NOISE_SEED_FACTOR * seed) & 0x7fffffff;
+				INT_TYPE n = (NOISE_X_FACTOR * x + NOISE_Y_FACTOR * y + NOISE_SEED_FACTOR * seed) & 0x7fffffff;
 				n = (n >> 13) ^ n;
 				return (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
 			}
@@ -285,7 +291,7 @@ namespace noisepp
 				return interpGradientCoherentFastNoise (x, y, x0, x1, y0, y1, xs, ys, seed, scale);
 			}
 
-			static NOISEPP_INLINE Real calcNoise (int x, int y, int seed=0)
+			static NOISEPP_INLINE Real calcNoise (INT_TYPE x, INT_TYPE y, int seed=0)
 			{
 				return Real(1.0) - ((Real)intNoise(x, y, seed) / Real(1073741824.0));
 			}
@@ -293,9 +299,9 @@ namespace noisepp
 	class Generator3D
 	{
 		private:
-			static NOISEPP_INLINE Real calcGradientNoise (Real fx, Real fy, Real fz, int ix, int iy, int iz, int seed)
+			static NOISEPP_INLINE Real calcGradientNoise (Real fx, Real fy, Real fz, INT_TYPE ix, INT_TYPE iy, INT_TYPE iz, int seed)
 			{
-				int vIndex = (NOISE_X_FACTOR * ix + NOISE_Y_FACTOR * iy + NOISE_Z_FACTOR * iz + NOISE_SEED_FACTOR * seed) & 0xffffffff;
+				INT_TYPE vIndex = (NOISE_X_FACTOR * ix + NOISE_Y_FACTOR * iy + NOISE_Z_FACTOR * iz + NOISE_SEED_FACTOR * seed) & 0xffffffff;
 				vIndex ^= (vIndex >> NOISE_SHIFT);
 				vIndex &= 0xff;
 
@@ -309,7 +315,7 @@ namespace noisepp
 				return (xGradient * xDelta + yGradient * yDelta + zGradient * zDelta);
 			}
 
-			static NOISEPP_INLINE Real interpGradientCoherentNoise (Real x, Real y, Real z, int x0, int x1, int y0, int y1, int z0, int z1, Real xs, Real ys, Real zs, int seed, Real scale)
+			static NOISEPP_INLINE Real interpGradientCoherentNoise (Real x, Real y, Real z, INT_TYPE x0, INT_TYPE x1, INT_TYPE y0, INT_TYPE y1, INT_TYPE z0, INT_TYPE z1, Real xs, Real ys, Real zs, int seed, Real scale)
 			{
 				Real n0, n1, ix0, ix1, iy0, iy1;
 				n0 = calcGradientNoise(x, y, z, x0, y0, z0, seed);
@@ -330,7 +336,7 @@ namespace noisepp
 				return Math::InterpLinear (iy0, iy1, zs) * scale;
 			}
 
-			static NOISEPP_INLINE Real interpGradientCoherentFastNoise (Real x, Real y, Real z, int x0, int x1, int y0, int y1, int z0, int z1, Real xs, Real ys, Real zs, int seed, Real scale)
+			static NOISEPP_INLINE Real interpGradientCoherentFastNoise (Real x, Real y, Real z, INT_TYPE x0, INT_TYPE x1, INT_TYPE y0, INT_TYPE y1, INT_TYPE z0, INT_TYPE z1, Real xs, Real ys, Real zs, int seed, Real scale)
 			{
 				Real n0, n1, ix0, ix1, iy0, iy1;
 				n0 = calcGradientFastNoise(x, y, z, x0, y0, z0, seed);
@@ -351,17 +357,17 @@ namespace noisepp
 				return Math::InterpLinear (iy0, iy1, zs) * scale;
 			}
 
-			static NOISEPP_INLINE Real calcGradientFastNoise (Real fx, Real fy, Real fz, int ix, int iy, int iz, int seed)
+			static NOISEPP_INLINE Real calcGradientFastNoise (Real fx, Real fy, Real fz, INT_TYPE ix, INT_TYPE iy, INT_TYPE iz, int seed)
 			{
-				int vIndex = (NOISE_X_FACTOR * ix + NOISE_Y_FACTOR * iy + NOISE_Z_FACTOR * iz + NOISE_SEED_FACTOR * seed) & 0xffffffff;
+				INT_TYPE vIndex = (NOISE_X_FACTOR * ix + NOISE_Y_FACTOR * iy + NOISE_Z_FACTOR * iz + NOISE_SEED_FACTOR * seed) & 0xffffffff;
 				vIndex ^= (vIndex >> NOISE_SHIFT);
 				vIndex &= 0xff;
 				return gradientVector[vIndex];
 			}
 
-			static NOISEPP_INLINE int intNoise (int x, int y, int z, int seed)
+			static NOISEPP_INLINE int intNoise (INT_TYPE x, INT_TYPE y, INT_TYPE z, int seed)
 			{
-				int n = (NOISE_X_FACTOR * x + NOISE_Y_FACTOR * y + NOISE_Z_FACTOR * z + NOISE_SEED_FACTOR * seed) & 0x7fffffff;
+				INT_TYPE n = (NOISE_X_FACTOR * x + NOISE_Y_FACTOR * y + NOISE_Z_FACTOR * z + NOISE_SEED_FACTOR * seed) & 0x7fffffff;
 				n = (n >> 13) ^ n;
 				return (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
 			}
@@ -432,7 +438,7 @@ namespace noisepp
 				return interpGradientCoherentFastNoise(x, y, z, x0, x1, y0, y1, z0, z1, xs, ys, zs, seed, scale);
 			}
 
-			static NOISEPP_INLINE Real calcNoise (int x, int y, int z, int seed=0)
+			static NOISEPP_INLINE Real calcNoise (INT_TYPE x, INT_TYPE y, INT_TYPE z, int seed=0)
 			{
 				return Real(1.0) - ((Real)intNoise(x, y, z, seed) / Real(1073741824.0));
 			}
