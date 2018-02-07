@@ -31,9 +31,9 @@
 #include "NoisePlatform.h"
 
 #ifdef NOISEPP_ENABLE_64BIT_INT
-  #define INT_TYPE int
+  #define INT_TYPE int_fast64_t
 #else
-  #define INT_TYPE INT_TYPE
+  #define INT_TYPE int
 #endif // NOISEPP_ENABLE_64BIT_INT
 
 namespace noisepp
